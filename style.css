@@ -218,22 +218,27 @@ footer p { margin: 0 0 4px; }
 .stat-grid .num { font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.1; }
 
 /* Practice: always dark, so the reference stands out. */
-#practice { position: fixed; inset: 0; display: flex; flex-direction: column; background: #121212; color: #eee; z-index: 10; }
+#practice { position: fixed; inset: 0; height: 100dvh; display: flex; flex-direction: column; background: #121212; color: #eee; z-index: 10; }
 #practice .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; }
 #practice .keys { color: #999; }
 .clock { font: 700 2rem/1 ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
 .clock.ending { color: #ff7a6b; }
 .progress { height: 4px; background: #2a2a2a; }
 .progress div { height: 100%; width: 0; background: #8da2ff; transition: width 0.1s linear; }
-.stage { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px; }
-.stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.stage { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px; overflow: hidden; }
+/* Absolute box + object-fit keeps any aspect ratio inside the stage, whatever its height. */
+.stage img { position: absolute; inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px); object-fit: contain; }
 .stage.gray img { filter: grayscale(1); }
 .prompt { font-size: clamp(1.6rem, 5vw, 3.2rem); font-weight: 700; text-align: center; max-width: 900px; margin: 0; }
 .paused-badge { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); padding: 6px 14px; border-radius: 999px; margin: 0; }
 #practice .controls { display: flex; justify-content: center; gap: 10px; padding: 12px 16px 18px; flex-wrap: wrap; }
 #practice button { background: #8da2ff; color: #10132a; border-color: #8da2ff; min-width: 88px; }
 #practice button.secondary { background: transparent; color: #cfd6ff; border-color: #4a4f6a; }
-@media (max-width: 520px) { #practice .keys { display: none; } }
+@media (max-width: 520px) {
+  #practice .keys { display: none; }
+  #practice .controls { flex-wrap: nowrap; gap: 6px; padding: 10px 10px calc(14px + env(safe-area-inset-bottom)); }
+  #practice .controls button { flex: 1; min-width: 0; padding: 10px 4px; }
+}
 
 #done { max-width: 900px; margin: 0 auto; padding: 32px 0; }
 .done-box { text-align: center; }
