@@ -1,0 +1,14 @@
+{
+  "name": "quickpose",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gesture-drawing practice timer using your own reference images. Runs in the browser.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/session.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

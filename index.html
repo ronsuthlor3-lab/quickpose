@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickPose</title>
+  <meta name="description" content="ตัวจับเวลาฝึกวาดท่าทาง (gesture drawing) ใช้รูปอ้างอิงของคุณเอง ทำงานในเครื่อง ฟรีและโอเพนซอร์ส">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="setup">
+    <header class="top">
+      <div class="brand">
+        <img src="icon.svg" alt="" width="36" height="36">
+        <div>
+          <h1>QuickPose</h1>
+          <p class="tagline" data-i18n="tagline"></p>
+        </div>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="th">ไทย</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </header>
+    <p class="privacy"><span aria-hidden="true">🔒</span> <span data-i18n="privacy"></span></p>
+
+    <div class="setup-grid">
+      <div>
+        <section class="card">
+          <h3 data-i18n="source"></h3>
+          <div class="segmented" role="radiogroup">
+            <label><input type="radio" name="src" value="images" checked> <span data-i18n="srcImages"></span></label>
+            <label><input type="radio" name="src" value="prompts"> <span data-i18n="srcPrompts"></span></label>
+          </div>
+          <div id="src-images" class="drop-zone">
+            <div class="row wrap">
+              <label class="button secondary"><span data-i18n="pickFiles"></span><input type="file" id="files" accept="image/*" multiple hidden></label>
+              <label class="button secondary"><span data-i18n="pickFolder"></span><input type="file" id="folder" webkitdirectory multiple hidden></label>
+            </div>
+            <p class="muted small" data-i18n="dropHint"></p>
+            <p id="img-count" class="strong"></p>
+            <div id="thumbs" class="thumbs"></div>
+          </div>
+          <p id="src-prompts" class="muted" data-i18n="promptsInfo" hidden></p>
+        </section>
+
+        <section class="card">
+          <h3 data-i18n="schedule"></h3>
+          <div class="presets" role="group">
+            <button type="button" data-preset="warmup"><strong data-i18n="pWarmup"></strong><small>10 × 30s</small></button>
+            <button type="button" data-preset="classic"><strong data-i18n="pClassic"></strong><small>30s · 1m · 5m · 10m</small></button>
+            <button type="button" data-preset="quick"><strong data-i18n="pQuick"></strong><small>20 × 30s</small></button>
+            <button type="button" data-preset="long"><strong data-i18n="pLong"></strong><small>5m · 15m</small></button>
+          </div>
+          <input id="custom" data-i18n-placeholder="custom" aria-label="Custom schedule">
+          <p class="msg" id="sched-msg" role="status"></p>
+        </section>
+
+        <section class="card">
+          <h3 data-i18n="options"></h3>
+          <label class="check"><input type="checkbox" id="opt-flip"> <span data-i18n="optFlip"></span></label>
+          <label class="check"><input type="checkbox" id="opt-gray"> <span data-i18n="optGray"></span></label>
+          <label class="check"><input type="checkbox" id="opt-beep" checked> <span data-i18n="optBeep"></span></label>
+          <label class="check"><input type="checkbox" id="opt-wake" checked> <span data-i18n="optWake"></span></label>
+          <button type="button" id="start" class="primary" data-i18n="start"></button>
+          <p class="msg error" id="start-msg" role="status"></p>
+        </section>
+      </div>
+
+      <aside class="card stats">
+        <h3 data-i18n="stats"></h3>
+        <div class="stat-grid">
+          <div><span id="st-streak" class="num">0</span><span data-i18n="sStreak"></span></div>
+          <div><span id="st-week" class="num">0</span><span data-i18n="sWeek"></span></div>
+          <div><span id="st-drawings" class="num">0</span><span data-i18n="sDrawings"></span></div>
+          <div><span id="st-days" class="num">0</span><span data-i18n="sDays"></span></div>
+        </div>
+        <p class="muted small" data-i18n="statsNote"></p>
+      </aside>
+    </div>
+
+    <footer>
+      <p data-i18n="footer"></p>
+      <p><a href="https://github.com/ronsuthlor3-lab/quickpose">GitHub</a> · <a href="https://github.com/ronsuthlor3-lab">More tools</a></p>
+    </footer>
+  </div>
+
+  <div id="practice" hidden>
+    <div class="bar">
+      <span id="round"></span>
+      <span id="clock" class="clock">0:00</span>
+      <span class="muted small keys" data-i18n="keys"></span>
+    </div>
+    <div class="progress"><div id="progress"></div></div>
+    <div class="stage" id="stage">
+      <img id="ref" alt="">
+      <p id="prompt" class="prompt" hidden></p>
+      <p id="paused" class="paused-badge" data-i18n="paused" hidden></p>
+    </div>
+    <div class="controls">
+      <button type="button" class="secondary" id="b-prev" data-i18n="prev"></button>
+      <button type="button" id="b-pause" data-i18n="pause"></button>
+      <button type="button" class="secondary" id="b-next" data-i18n="next"></button>
+      <button type="button" class="secondary" id="b-stop" data-i18n="stop"></button>
+    </div>
+  </div>
+
+  <div id="done" hidden>
+    <div class="done-box">
+      <h2 data-i18n="doneTitle"></h2>
+      <p id="done-text"></p>
+      <div id="done-grid" class="thumbs big"></div>
+      <div class="row center-row">
+        <button type="button" id="again" data-i18n="again"></button>
+        <button type="button" class="secondary" id="back" data-i18n="back"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
